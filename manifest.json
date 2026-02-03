@@ -3,7 +3,7 @@
   "short_name": "Doorbell",
   "start_url": "index.html",
   "display": "fullscreen",
-  "background_color": "#001f3f",
+  "background_color": linear-gradient(135deg, #4169e1 0%, #001f3f 100%),
   "theme_color": "#2196F3",
   "icons": [
     {
