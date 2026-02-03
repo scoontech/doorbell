@@ -6,6 +6,16 @@ const statusEl = document.getElementById('status');
 const nameInput = document.getElementById('visitor-name');
 const ringBtn = document.getElementById('ringButton');
 
+async function enterKioskMode() {
+    try {
+        if (!document.fullscreenElement) {
+            await document.documentElement.requestFullscreen();
+        }
+    } catch (err) {
+        console.log("Fullscreen failed - requires user gesture.");
+    }
+}
+
 // 1. Initialize Camera
 async function init() {
     try {
@@ -54,5 +64,9 @@ async function ringDoorbell() {
     }, 'image/png');
 }
 
-ringBtn.addEventListener('click', ringDoorbell);
+// Modify your event listener
+ringBtn.addEventListener('click', () => {
+    enterKioskMode();
+    ringDoorbell();
+})
 init();
