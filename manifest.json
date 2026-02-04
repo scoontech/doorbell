@@ -4,7 +4,7 @@
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": linear-gradient(135deg, #4169e1 0%, #001f3f 100%),
+  "background_color": #4169e1,
   "theme_color": "#2196F3",
   "icons": [
     {
