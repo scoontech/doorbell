@@ -2,55 +2,69 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Doorbell Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
-    
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
     <meta name="apple-mobile-web-app-title" content="Doorbell">
     
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2922/2922579.png">
-    
+    <title>Doorbell Debugger</title>
     <link rel="manifest" href="manifest.json">
+    
     <style>
-        :root { --primary: #ff5252; --glow: rgba(255, 82, 82, 0.6); }
-        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #4169e1 0%, #001f3f 100%); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-
-        #video { width: 85%; max-width: 600px; border-radius: 20px; border: 2px solid #333; transform: scaleX(-1); margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-
-        .input-group { width: 85%; max-width: 400px; margin-bottom: 25px; }
-        input {
-            width: 100%; padding: 15px; font-size: 1.2rem; border-radius: 12px; border: 2px solid #444;
-            background: #1a1a1a; color: white; text-align: center; outline: none; transition: border 0.3s;
-        }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--glow); }
-
-        .ring-btn {
-            padding: 25px 50px; font-size: 1.8rem; font-weight: bold; background: var(--primary);
-            color: white; border: none; border-radius: 100px; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 2px;
-            /* The Glow */
-            box-shadow: 0 0 20px var(--glow), 0 0 40px var(--glow);
-            transition: all 0.3s;
-        }
-        .ring-btn:active { transform: scale(0.9); box-shadow: 0 0 10px var(--glow); }
-        .ring-btn:hover { box-shadow: 0 0 30px var(--primary), 0 0 60px var(--glow); }
-
-        .status { margin-top: 20px; font-size: 0.9rem; color: #666; font-style: italic; }
+        body { background: #121212; color: #00ff00; font-family: monospace; padding: 20px; }
+        .log-item { margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .success { color: #00ff00; }
+        .fail { color: #ff5252; font-weight: bold; }
+        .info { color: #52aaff; }
     </style>
 </head>
 <body>
 
-    <video id="video" autoplay playsinline></video>
+    <h2>PWA Diagnostics</h2>
+    <div id="debug-log"></div>
 
-    <div class="input-group">
-        <input type="text" id="visitor-name" placeholder="Who's there?" autocomplete="off">
-    </div>
+    <script>
+        const log = document.getElementById('debug-log');
+        function print(msg, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `log-item ${type}`;
+            div.innerText = `> ${msg}`;
+            log.appendChild(div);
+        }
 
-    <button class="ring-btn" id="ringButton">🔔 Ring Bell</button>
-    <p id="status" class="status">System Online</p>
+        // 1. Check if running as Standalone
+        const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+        if (isStandalone) {
+            print("MODE: Standalone App (Success!)", "success");
+        } else {
+            print("MODE: Safari Browser (Fail - Add to Home Screen)", "fail");
+        }
 
-    <script src="app.js"></script>
+        // 2. Check Protocol
+        if (window.location.protocol === 'https:') {
+            print("PROTOCOL: HTTPS (Secure)", "success");
+        } else {
+            print("PROTOCOL: HTTP (Insecure - Standalone will fail)", "fail");
+        }
+
+        // 3. Check Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(() => print("SERVICE WORKER: Registered", "success"))
+                .catch(err => print("SERVICE WORKER: Failed (" + err.message + ")", "fail"));
+        } else {
+            print("SERVICE WORKER: Not supported", "fail");
+        }
+
+        // 4. Check Manifest
+        fetch('manifest.json')
+            .then(res => res.json())
+            .then(data => print("MANIFEST: Found & Readable", "success"))
+            .catch(() => print("MANIFEST: 404 Not Found", "fail"));
+            
+        // 5. User Agent Info
+        print("UA: " + navigator.userAgent);
+    </script>
 </body>
 </html>
