@@ -1,16 +1,16 @@
 {
-  "name": "Smart Doorbell",
   "short_name": "Doorbell",
-  "start_url": "./index.html",
-  "scope": "./",
-  "display": "standalone",
-  "background_color": #4169e1,
-  "theme_color": "#2196F3",
+  "name": "Smart Doorbell System",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/2922/2922579.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "sizes": "512x512"
     }
-  ]
+  ],
+  "start_url": "./index.html",
+  "background_color": "#121212",
+  "theme_color": "#ff5252",
+  "display": "standalone",
+  "scope": "./"
 }
